@@ -11,47 +11,45 @@ import (
 	"strings"
 )
 
-const marker = `
+const marker = `#include "iso639/cIso639.h"
+
 /*******************************************************************************
 ********************************************************* Types and Definitions
 ********************************************************************************
  https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt
 *******************************************************************************/
-`
-
-const fullFmtTmpl = `#include "iso639/cIso639.h"
-%s
 
 #define c_c_( Str ) (cChars){ .s=strlen(Str), .v=Str }
+#define a2_( A, B ) (cIso639){ .code={ A, B, '\0', '\0' } }
+#define a3_( A, B, C ) (cIso639){ .code={ A, B, C, '\0' } }
+`
 
+const fullFmtTmpl = `%s
+static cIso639Info raw[%d] = {
+	%s
+};
+cIso639InfoSlice const C_Iso639InfoValues = { .s=%d, .v=raw };
+`
+
+const bibFmtTmpl = `%s
 static cIso639 raw[%d] = {
 	%s
 };
-cIso639Slice const C_Iso639Values = { .s=%d, .v=raw };
+cIso639Slice const C_Iso639BibValues = { .s=%d, .v=raw };
 `
 
-const bibFmtTmpl = `#include "iso639/cIso639p2.h"
-%s
-static cIso639p2 raw[%d] = {
+const terFmtTmpl = `%s
+static cIso639 raw[%d] = {
 	%s
 };
-cIso639p2Slice const C_Iso639p2BibValues = { .s=%d, .v=raw };
+cIso639Slice const C_Iso639TerValues = { .s=%d, .v=raw };
 `
 
-const terFmtTmpl = `#include "iso639/cIso639p2.h"
-%s
-static cIso639p2 raw[%d] = {
+const a2FmtTmpl = `%s
+static cIso639 raw[%d] = {
 	%s
 };
-cIso639p2Slice const C_Iso639p2TerValues = { .s=%d, .v=raw };
-`
-
-const a2FmtTmpl = `#include "iso639/cIso639p1.h"
-%s
-static cIso639p1 raw[%d] = {
-	%s
-};
-cIso639p1Slice const C_Iso639p1Values = { .s=%d, .v=raw };
+cIso639Slice const C_Iso639Alpha2Values = { .s=%d, .v=raw };
 `
 
 //go:embed ISO-639-2_utf-8.txt
@@ -106,27 +104,30 @@ func main() {
 		isoVal := iso639(record)
 
 		bib := isoVal.Bib()
-		bibVal := fmt.Sprintf("build_iso639p2_c_( '%c', '%c', '%c' )", bib[0], bib[1], bib[2])
+		bibVal := fmt.Sprintf("a3_( '%c', '%c', '%c' )", bib[0], bib[1], bib[2])
 		bibValues = append(bibValues, bibVal)
 
 		ter := isoVal.Ter()
-		terVal := fmt.Sprintf("build_iso639p2_c_( '%c', '%c', '%c' )", ter[0], ter[1], ter[2])
+		terVal := fmt.Sprintf("a3_( '%c', '%c', '%c' )", ter[0], ter[1], ter[2])
 		terValues = append(terValues, terVal)
 
 		a2 := isoVal.Alpha2()
-		a2Val := "build_iso639p1_c_( '\\0', '\\0' )"
+		a2Val := "a2_( '\\0', '\\0' )"
 		if a2 != "" {
-			a2Val = fmt.Sprintf("build_iso639p1_c_( '%c', '%c' )", a2[0], a2[1])
+			a2Val = fmt.Sprintf("a2_( '%c', '%c' )", a2[0], a2[1])
 			a2Values = append(a2Values, a2Val)
 		}
 
 		fullKeys = append(fullKeys, isoVal.Bib())
-		fullValues[isoVal.Bib()] = fmt.Sprintf("(cIso639){ .p1=%s, .p2B=%s, .p2T=%s, .name=c_c_( %q ) }", a2Val, bibVal, terVal, isoVal.Name())
+		fullValues[isoVal.Bib()] = fmt.Sprintf(
+         "(cIso639Info){ %s, %s, %s, c_c_( %q ) }",
+         a2Val, bibVal, terVal, isoVal.Name(),
+      )
 	}
 
 	if len(os.Args) == 1 {
-		fmt.Println("use --full, --bib, --ter or --alpha2")
-	} else if os.Args[1] == "--full" {
+		fmt.Println("use --info, --bib, --ter or --alpha2")
+	} else if os.Args[1] == "--info" {
 		sort.Strings(fullKeys)
 		fulls := []string{}
 		for _, k := range fullKeys {
