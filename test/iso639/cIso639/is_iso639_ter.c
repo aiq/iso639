@@ -1,5 +1,5 @@
 #include "clingo/lang/expect.h"
-#include "iso639/cIso639p1.h"
+#include "iso639/cIso639.h"
 
 TEMP_SLICE_DEF_C_(
    test,
@@ -15,15 +15,16 @@ int main( void )
    init_tap_c_();
 
    testSlice tests = slice_c_( test,
-      t_( "aa", true ),
-      t_( "hk", false ),
-      t_( "zu", true )
+      t_( "aar", true ),
+      t_( "arm", false ),
+      t_( "hye", true ),
+      t_( "zza", true )
    );
 
    for_each_c_( test const*, t, tests )
    {
-      cIso639p1 val = iso639p1_c_( t->inp );
-      bool res = is_iso639p1_c( val );
+      cIso639 val = iso639_c_( t->inp );
+      bool res = is_iso639_ter_c( val );
 
       tap_descf_c( res == t->exp, "test: %s", val.code );
    }

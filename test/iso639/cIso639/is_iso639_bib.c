@@ -1,5 +1,5 @@
 #include "clingo/lang/expect.h"
-#include "iso639/cIso639p2.h"
+#include "iso639/cIso639.h"
 
 TEMP_SLICE_DEF_C_(
    test,
@@ -23,8 +23,8 @@ int main( void )
 
    for_each_c_( test const*, t, tests )
    {
-      cIso639p2 val = iso639p2_c_( t->inp );
-      bool res = is_bib_iso639p2_c( val );
+      cIso639 val = iso639_c_( t->inp );
+      bool res = is_iso639_bib_c( val );
 
       tap_descf_c( res == t->exp, "test: %s", val.code );
    }
