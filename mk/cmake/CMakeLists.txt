@@ -36,9 +36,10 @@ fetchcontent_declare(
     GIT_REPOSITORY "https://github.com/aiq/clingo"
     GIT_TAG "787d0cf82dae41d29f9fadf02d22ef5a93dfc13a"
 )
-
-fetchcontent_makeavailable( clingo )
-add_subdirectory( ${clingo_SOURCE_DIR}/mk/cmake ${clingo_BINARY_DIR} )
+if( NOT clingo_POPULATED )
+    fetchcontent_populate( clingo )
+    add_subdirectory( ${clingo_SOURCE_DIR}/mk/cmake ${clingo_BINARY_DIR} )
+endif()
 
 ################################################################################
 # build - make
