@@ -29,20 +29,16 @@ typedef struct cIso639Info cIso639Info;
  generated
 *******************************************************************************/
 
-SLICE_DEF_C_(
-   cIso639,             // Type
-   cIso639Slice,        // SliceType
-   iso639_slice_c,      // FuncName
-   cVarIso639Slice,     // VarSliceType
-   var_iso639_slice_c   // VarFuncName
+SLICES_C_(
+   cIso639,          // Type
+   cIso639Slice,     // SliceType
+   cVarIso639Slice   // VarSliceType
 )
 
-SLICE_DEF_C_(
-   cIso639Info,            // Type
-   cIso639InfoSlice,       // SliceType
-   iso639_info_slice_c,    // FuncName
-   cVarIso639InfoSlice,    // VarSliceType
-   var_iso639_info_slice_c // VarFuncName
+SLICES_C_(
+   cIso639Info,         // Type
+   cIso639InfoSlice,    // SliceType
+   cVarIso639InfoSlice  // VarSliceType
 )
 
 /*******************************************************************************

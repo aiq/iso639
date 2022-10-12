@@ -34,7 +34,7 @@ include( ${CMAKE_CURRENT_SOURCE_DIR}/FileLists.cmake )
 fetchcontent_declare(
     clingo
     GIT_REPOSITORY "https://github.com/aiq/clingo"
-    GIT_TAG "fbcfd1f018cecdb8cab92ab62a2fa2fd050aa4f8"
+    GIT_TAG "a54bcb30cd46be11d1c5d34bbbabcc96e93e2000"
     SOURCE_SUBDIR "mk/cmake"
 )
 
@@ -44,6 +44,7 @@ fetchcontent_makeavailable( clingo )
 # build - make
 ################################################################################
 add_library( ${LIB_NAME} SHARED ${SRC_FILES} )
+set_default_flags( ${LIB_NAME} )
 target_include_directories( ${LIB_NAME} PUBLIC ${INC_DIR} PRIVATE ${SRC_DIR} )
 if( WIN32 )
     target_link_libraries( ${LIB_NAME} clingo )
